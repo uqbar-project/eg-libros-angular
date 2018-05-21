@@ -1,0 +1,18 @@
+import { Pipe, PipeTransform } from '@angular/core'
+import Libro from "./domain/libro"
+
+@Pipe({
+  name: 'libroFilter'
+})
+export class LibroFilter implements PipeTransform {
+
+  transform(libros: Array<Libro>, libroABuscar: string): any {
+    return libros.filter(libro => 
+      libroABuscar === "" || this.coincide(libro.titulo, libroABuscar) || this.coincide(libro.autor, libroABuscar)
+    ) 
+  }
+
+  coincide(valor1: string, valor2: string) {
+    return valor1.match(valor2) !== null
+  }
+}
