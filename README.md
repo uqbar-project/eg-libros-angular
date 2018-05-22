@@ -1,6 +1,6 @@
 # Búsqueda de libros básica
 
-TODO: build de travis
+[![Build Status](https://travis-ci.org/uqbar-project/eg-libros-angular.svg?branch=master)](https://travis-ci.org/uqbar-project/eg-libros-angular)
 
 # Creación del proyecto
 
@@ -98,6 +98,36 @@ export class LibroService {
           ...
 ```
 
+## Testeo unitario sobre el service
+
+Podemos empezar a estudiar cómo funciona la inyección de dependencia del service en el test. Al configurar el fixture en el código asociado al _beforeEach_, registramos como provider al LibroService. Esto en el archivo _libro.service.spec.ts_:
+
+```typescript
+describe('LibroService', () => {
+  beforeEach(() => {
+    TestBed.configureTestingModule({
+      providers: [LibroService]
+    })
+  })
+```
+
+Luego, en cada test recibimos la referencia al servicio mockeado para poder utilizarlo:
+
+```typescript
+  it('should be created', inject([LibroService], (service: LibroService) => {
+    expect(service).toBeTruthy()
+  }))
+  it('should return Kryptonita book', inject([LibroService], (service: LibroService) => {
+    const libros = service.libros
+    const kryptonita = libros.find((libro: Libro) => libro.titulo.startsWith('Kryptonita'))
+    expect(kryptonita).toBeTruthy()
+  }))
+})
+```
+
+En este caso no es demasiado interesante lo que ocurre, el servicio mockeado coincide con el servicio original. Pero cuando tenemos que acceder a servicios remotos (y presumiblemente costosos), podemos reemplazar el comportamiento del service por otro más controlado para facilitar las pruebas unitarias. Y a su vez también podemos hacer esto para testear nuestros componentes de Angular. En ejemplos posteriores veremos más en profundidad este tema.
+
+
 # Pipe
 
 También creamos un pipe mediante un comando Angular CLI:
@@ -106,4 +136,69 @@ También creamos un pipe mediante un comando Angular CLI:
 $ ng generate pipe libro
 ```
 
-Esto genera el archivo libro.pipe.ts y su correspondiente test libro.pipe.spec.ts
+Esto genera el archivo libro.pipe.ts y su correspondiente test libro.pipe.spec.ts.
+
+El pipe sabe hacer la búsqueda por título o autor en base al valor ingresado (cuando no hay nada ingresado no se aplica ningún filtro); esto lo resuelve la implementación del método transform que define la interfaz de un pipe de Angular:
+
+```typescript
+@Pipe({
+  name: 'libroFilter'
+})
+export class LibroFilter implements PipeTransform {
+
+  transform(libros: Array<Libro>, libroABuscar: string): any {
+    return libros.filter(libro => 
+      libroABuscar === "" || this.coincide(libro.titulo, libroABuscar) || this.coincide(libro.autor, libroABuscar)
+    ) 
+  }
+
+  coincide(valor1: string, valor2: string) {
+    return valor1.match(valor2) !== null
+  }
+}
+```
+
+Además se incorpora la annotation @Pipe a nuestra clase LibroFilter.
+
+## Testeo unitario sobre el pipe
+
+Para probar el pipe vamos a crear una lista de libros propia dentro de nuestro test (archivo _libro.pipe.spec.ts_):
+
+```typescript
+const libros = [new Libro('Rayuela', 'Cortazar'), new Libro('Ficciones', 'Borges') ]
+```
+
+Luego del típico test de creación del filtro exitosa, vamos a realizar estas pruebas:
+
+- si no ingreso valores a filtrar debe devolver la misma lista de libros original
+- al ingresar un valor, funciona la búsqueda por título sin tomar en cuenta mayúsculas / minúsculas. En nuestro ejemplo ingresamos "rayu" lo que debe traer el libro "Rayuela" de Cortázar.
+- y al ingresar un valor, funciona la búsqueda por autor sin tomar en cuenta mayúsculas / minúsculas. En nuestro ejemplo ingresamos "bor" lo que debe traer el libro "Ficciones" de Borges.
+
+```typescript
+describe('LibroPipe', () => {
+  ...
+  it('empty filter returns same collection of books', () => {
+    const pipe = new LibroFilter()
+    const librosFiltrados = pipe.transform(libros, "")
+    expect(librosFiltrados.length).toBe(2)
+  })
+  it('filter by title works (case insensitive)', () => {
+    const pipe = new LibroFilter()
+    const librosFiltrados : Array<Libro> = pipe.transform(libros, "rayu")
+    expect(librosFiltrados.length).toBe(1)
+    const rayuela = librosFiltrados.pop()
+    expect(rayuela.titulo).toBe("Rayuela")
+  })
+  it('filter by author works (case insensitive)', () => {
+    const pipe = new LibroFilter()
+    const librosFiltrados : Array<Libro> = pipe.transform(libros, "bor")
+    expect(librosFiltrados.length).toBe(1)
+    const ficciones = librosFiltrados.pop()
+    expect(ficciones.titulo).toBe("Ficciones")
+  })
+})
+```
+
+# La aplicación MVC
+
+Ahora sí
