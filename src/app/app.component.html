@@ -1,23 +1,25 @@
 <body>
 
-	<br>
-	
-	<div class="filtro">
-		<span class="buscarLibros">&nbsp;Buscar:&nbsp;</span>
-		<input [(ngModel)]="libroABuscar" class="filtroLibros">
+	<div class="card card-body">
+		<h4 class="card-title">Búsqueda de libros</h4>
+		
+		<i class="fa fa-search"></i>
+		<div class="md-form">
+			<input type="text" [(ngModel)]="libroABuscar" class="form-control">
+			<label for="form1">Ingrese un valor a buscar</label>
+		</div>
+
+		<div class="flex-row">
+			<table class="table table-striped table-bordered table-hover">
+				<tr class="cyan lighten-4">
+					<th>Titulo</th>
+					<th>Autor</th>
+				</tr>
+				<tr *ngFor="let libro of libros | libroFilter: libroABuscar">
+					<td>{{libro.titulo}}</td>
+					<td>{{libro.autor}}</td>
+				</tr>
+			</table>
+		</div>
 	</div>
-
-	<br>
-
-	<table class="table table-striped table-bordered table-hover">
-		<tr class="cyan lighten-4">
-			<th>Titulo</th>
-			<th>Autor</th>
-		</tr>
-		<tr *ngFor="let libro of libros | libroFilter: libroABuscar">
-			<td>{{libro.titulo}}</td>
-			<td>{{libro.autor}}</td>
-		</tr>
-	</table>
-
 </body>
