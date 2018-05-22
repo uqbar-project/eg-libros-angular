@@ -201,4 +201,114 @@ describe('LibroPipe', () => {
 
 # La aplicación MVC
 
-Ahora sí
+En sí la aplicación tiene una vista _app.component.html_ con componentes propios de [Material Design for Bootstrap](https://mdbootstrap.com/), específicamente con dos tipos de binding:
+
+- el input con binding bidireccional contra la propiedad libroABuscar del componente
+
+```html
+<div class="md-form">
+    <input type="text" [(ngModel)]="libroABuscar" class="form-control">
+    <label for="form1">Ingrese un valor a buscar</label>
+</div>
+```
+
+- y la tabla de libros contra la propiedad libros del mismo componente principal
+
+```html
+<table class="table table-striped table-bordered table-hover">
+    <tr class="cyan lighten-4">
+        <th>Titulo</th>
+        <th>Autor</th>
+    </tr>
+    <tr *ngFor="let libro of libros | libroFilter: libroABuscar">
+        <td>{{libro.titulo}}</td>
+        <td>{{libro.autor}}</td>
+    </tr>
+</table>
+```
+
+El pipe libroFilter se aplica como filtro de los libros asociados.
+
+El controller (_app.component.ts_) delega la búsqueda de los libros al service y sirve como contenedor del estado de la vista:
+
+```typescript
+export class AppComponent implements OnInit {
+  title = 'app'
+  librosService : LibroService
+  libroABuscar : String = ''
+  libros : Array<Libro> = []
+  
+  constructor(librosService: LibroService) {
+    this.librosService = librosService
+  }
+  
+  ngOnInit(): void {
+    this.libros = this.librosService.libros
+  }
+}
+```
+
+El libro no tiene comportamiento, representa por el momento un objeto de dominio con los atributos título y autor.
+
+# Testing del componente principal
+
+En lugar de trabajar con el servicio que definimos, vamos a construir un stub de testing (_stub.libro.service.ts_):
+
+```typescript
+export default class StubLibroService {
+    libros = [new Libro('Rayuela', 'Cortazar'), new Libro('Ficciones', 'Borges') ]
+}
+```
+
+Ese stub lo vamos a inyectar dentro del componente principal AppComponent en la inicialización de nuestro fixture:
+
+```typescript
+describe('AppComponent', () => {
+  
+  beforeEach(async(() => {
+    TestBed.configureTestingModule({
+      declarations: [
+        AppComponent,
+        LibroFilter
+      ],
+      imports: [
+        FormsModule
+      ],
+      providers: [
+        StubLibroService
+      ]
+    }).compileComponents()
+    libroService = TestBed.get(StubLibroService)
+    fixture = TestBed.createComponent(AppComponent)
+    app = fixture.componentInstance
+    app.librosService = libroService
+    fixture.detectChanges()
+  }))
+```
+
+Mediante la configuración _providers_ agregamos el stub que luego se pasa a la referencia app que decora nuestra aplicación Angular. A partir de aquí podemos probar:
+
+- que la búsqueda devuelve el libro Rayuela (que no forma parte del servicio original)
+- que podemos filtrar por título (devuelve el libro "Ficciones" de Borges y no "Rayuela")
+- que podemos filtrar por autor (el mismo resultado que en el test anterior)
+
+```typescript
+  it('should return ok books', async(() => {
+    const compiled = fixture.debugElement.nativeElement
+    expect(compiled.querySelector('td').textContent).toContain('Rayuela')
+  }))
+  it('should filter ok books by title', async(() => {
+    app.libroABuscar = 'Fic'
+    fixture.detectChanges()
+    const compiled = fixture.debugElement.nativeElement
+    expect(compiled.querySelector('td').textContent).not.toContain('Rayuela')
+    expect(compiled.querySelector('td').textContent).toContain('Ficciones')
+  }))
+  it('should filter ok books by author', async(() => {
+    app.libroABuscar = 'bor'
+    fixture.detectChanges()
+    const compiled = fixture.debugElement.nativeElement
+    expect(compiled.querySelector('td').textContent).not.toContain('Rayuela')
+    expect(compiled.querySelector('td').textContent).toContain('Ficciones')
+  }))
+```
