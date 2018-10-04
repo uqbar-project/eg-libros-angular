@@ -337,7 +337,7 @@ Mediante la configuración _providers_ agregamos el stub que luego se pasa a la 
 
 Aquí también tenemos una oportunidad para refactorizar:
 
-```
+```typescript
   it('should return ok books', async(() => {
     const compiled = fixture.debugElement.nativeElement
     existeUnaColumnaDeValor(compiled, 'Rayuela')
