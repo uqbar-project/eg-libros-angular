@@ -15,7 +15,7 @@ $ ng new eg-libros-angular
 Luego necesitamos las dependencias de Material Design for Bootstrap
  
 ```bash
-$ npm install mdbootstrap --save
+$ npm install mdbootstrap
 ```
 
 Siguiendo [este tutorial](https://medium.com/codingthesmartway-com-blog/using-bootstrap-with-angular-c83c3cee3f4a) dentro de la propiedad styles del archivo _angular.json_ del raíz agregamos los archivos css:
