@@ -13,6 +13,6 @@ export class LibroFilter implements PipeTransform {
   }
 
   coincide(valor1: string, valor2: string) {
-    return valor1.toLowerCase().match(valor2.toLowerCase()) !== null
+    return valor1.toLowerCase().match(valor2.toLowerCase())
   }
 }

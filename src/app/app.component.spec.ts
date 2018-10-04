@@ -38,25 +38,43 @@ describe('AppComponent', () => {
     expect(app.title).toEqual('app')
   }))
   it('should render title in a h1 tag', async(() => {
-    const compiled = fixture.debugElement.nativeElement
-    expect(compiled.querySelector('.card-title').textContent).toContain('Búsqueda de libros')
+    existeTituloDeValor('Búsqueda de libros')
   }))
   it('should return ok books', async(() => {
-    const compiled = fixture.debugElement.nativeElement
-    expect(compiled.querySelector('td').textContent).toContain('Rayuela')
+    existeUnaColumnaDeValor('Rayuela')
   }))
   it('should filter ok books by title', async(() => {
     app.libroABuscar = 'Fic'
     fixture.detectChanges()
-    const compiled = fixture.debugElement.nativeElement
-    expect(compiled.querySelector('td').textContent).not.toContain('Rayuela')
-    expect(compiled.querySelector('td').textContent).toContain('Ficciones')
+    noExisteUnaColumnaDeValor('Rayuela')
+    existeUnaColumnaDeValor('Ficciones')
   }))
   it('should filter ok books by author', async(() => {
     app.libroABuscar = 'bor'
     fixture.detectChanges()
-    const compiled = fixture.debugElement.nativeElement
-    expect(compiled.querySelector('td').textContent).not.toContain('Rayuela')
-    expect(compiled.querySelector('td').textContent).toContain('Ficciones')
+    noExisteUnaColumnaDeValor('Rayuela')
+    existeUnaColumnaDeValor('Ficciones')
   }))  
+
+  function existeTituloDeValor(valor: string) {
+    existeTag('.card-title', valor)
+  }
+  
+  function noExisteUnaColumnaDeValor(valor: string) {
+    noExisteTag('td', valor)
+  }
+  
+  function existeUnaColumnaDeValor(valor: string) {
+    existeTag('td', valor)
+  }
+  
+  function existeTag(tag: string, valor: string) {
+    const compiled = fixture.debugElement.nativeElement
+    expect(compiled.querySelector(tag).textContent).toContain(valor)
+  }
+  
+  function noExisteTag(tag: string, valor: string) {
+    const compiled = fixture.debugElement.nativeElement
+    expect(compiled.querySelector(tag).textContent).not.toContain(valor)
+  }  
 })

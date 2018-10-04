@@ -153,7 +153,7 @@ export class LibroFilter implements PipeTransform {
   }
 
   coincide(valor1: string, valor2: string) {
-    return valor1.match(valor2) !== null
+    return valor1.toLowerCase().match(valor2.toLowerCase())
   }
 }
 ```
@@ -198,6 +198,28 @@ describe('LibroPipe', () => {
   })
 })
 ```
+
+Mmm... hay algo de código repetido, hagamos un pequeño refactor:
+
+```typescript
+  it('filter by title works (case insensitive)', () => {
+    encontrar("rayu", "Rayuela")
+  })
+  it('filter by author works (case insensitive)', () => {
+    encontrar("bor", "Ficciones")
+  })
+})
+
+function encontrar(criterioBusqueda: string, titulo: string) {
+  const pipe = new LibroFilter()
+  const librosFiltrados: Array<Libro> = pipe.transform(libros, criterioBusqueda)
+  expect(librosFiltrados.length).toBe(1)
+  const rayuela = librosFiltrados.pop()
+  expect(rayuela.titulo).toBe(titulo)
+}
+```
+
+Mucho mejor, extraemos una función propia del test que haga las validaciones comunes.
 
 # La aplicación MVC
 
@@ -311,4 +333,87 @@ Mediante la configuración _providers_ agregamos el stub que luego se pasa a la 
     expect(compiled.querySelector('td').textContent).not.toContain('Rayuela')
     expect(compiled.querySelector('td').textContent).toContain('Ficciones')
   }))
+```
+
+Aquí también tenemos una oportunidad para refactorizar:
+
+```
+  it('should return ok books', async(() => {
+    const compiled = fixture.debugElement.nativeElement
+    existeUnaColumnaDeValor(compiled, 'Rayuela')
+  }))
+  it('should filter ok books by title', async(() => {
+    app.libroABuscar = 'Fic'
+    fixture.detectChanges()
+    const compiled = fixture.debugElement.nativeElement
+    noExisteUnaColumnaDeValor(compiled, 'Rayuela')
+    existeUnaColumnaDeValor(compiled, 'Ficciones')
+  }))
+  it('should filter ok books by author', async(() => {
+    app.libroABuscar = 'bor'
+    fixture.detectChanges()
+    const compiled = fixture.debugElement.nativeElement
+    noExisteUnaColumnaDeValor(compiled, 'Rayuela')
+    existeUnaColumnaDeValor(compiled, 'Ficciones')
+  }))  
+})
+
+function noExisteUnaColumnaDeValor(compiled: any, valor: string) {
+  expect(compiled.querySelector('td').textContent).not.toContain(valor)
+}
+
+function existeUnaColumnaDeValor(compiled: any, valor: string) {
+  expect(compiled.querySelector('td').textContent).toContain(valor)
+}
+```
+
+Un detalle no menor es que **elevamos el nivel de abstracción**: antes pedíamos que hubiera un tag `<td>` que cumpliera ciertas condiciones. Ahora hablamos del concepto de "columna", más cercano al usuario y menos a cómo se implementa (podría ser un div y no un td). Esto es fundamental para lograr que nuestros tests mejoren en mantenibilidad. 
+
+Un nuevo paso en nuestro refactor sería:
+
+- evitar la duplicación en cada test de hacer `const compiled = fixture.debugElement.nativeElement`. Para eso, podemos aprovechar la variable fixture cuyo scope está enmarcado por el describe. Escribiremos funciones dentro del describe entonces, para no tener que pasar el fixture como parámetro
+- además, hay otro test que valida un título por la clase cardTitle. Haremos una función más general que buscará un tag (o clase) dentro del html resuelto. Como resultado, cada test queda mucho más chico:
+
+```typescript
+  it('should render title in a h1 tag', async(() => {
+    existeTituloDeValor('Búsqueda de libros')
+  }))
+  it('should return ok books', async(() => {
+    existeUnaColumnaDeValor('Rayuela')
+  }))
+  it('should filter ok books by title', async(() => {
+    app.libroABuscar = 'Fic'
+    fixture.detectChanges()
+    noExisteUnaColumnaDeValor('Rayuela')
+    existeUnaColumnaDeValor('Ficciones')
+  }))
+  it('should filter ok books by author', async(() => {
+    app.libroABuscar = 'bor'
+    fixture.detectChanges()
+    noExisteUnaColumnaDeValor('Rayuela')
+    existeUnaColumnaDeValor('Ficciones')
+  }))  
+
+  function existeTituloDeValor(valor: string) {
+    existeTag('.card-title', valor)
+  }
+  
+  function noExisteUnaColumnaDeValor(valor: string) {
+    noExisteTag('td', valor)
+  }
+  
+  function existeUnaColumnaDeValor(valor: string) {
+    existeTag('td', valor)
+  }
+  
+  function existeTag(tag: string, valor: string) {
+    const compiled = fixture.debugElement.nativeElement
+    expect(compiled.querySelector(tag).textContent).toContain(valor)
+  }
+  
+  function noExisteTag(tag: string, valor: string) {
+    const compiled = fixture.debugElement.nativeElement
+    expect(compiled.querySelector(tag).textContent).not.toContain(valor)
+  }  
+})
 ```

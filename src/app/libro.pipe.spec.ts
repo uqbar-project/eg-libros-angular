@@ -14,17 +14,18 @@ describe('LibroPipe', () => {
     expect(librosFiltrados.length).toBe(2)
   })
   it('filter by title works (case insensitive)', () => {
-    const pipe = new LibroFilter()
-    const librosFiltrados : Array<Libro> = pipe.transform(libros, "rayu")
-    expect(librosFiltrados.length).toBe(1)
-    const rayuela = librosFiltrados.pop()
-    expect(rayuela.titulo).toBe("Rayuela")
+    encontrar("rayu", "Rayuela")
   })
   it('filter by author works (case insensitive)', () => {
-    const pipe = new LibroFilter()
-    const librosFiltrados : Array<Libro> = pipe.transform(libros, "bor")
-    expect(librosFiltrados.length).toBe(1)
-    const ficciones = librosFiltrados.pop()
-    expect(ficciones.titulo).toBe("Ficciones")
+    encontrar("bor", "Ficciones")
   })
 })
+
+function encontrar(criterioBusqueda: string, titulo: string) {
+  const pipe = new LibroFilter()
+  const librosFiltrados: Array<Libro> = pipe.transform(libros, criterioBusqueda)
+  expect(librosFiltrados.length).toBe(1)
+  const rayuela = librosFiltrados.pop()
+  expect(rayuela.titulo).toBe(titulo)
+}
+
