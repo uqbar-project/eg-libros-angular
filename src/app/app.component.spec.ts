@@ -1,17 +1,15 @@
-import { TestBed, async, ComponentFixture } from '@angular/core/testing'
-import { FormsModule } from '@angular/forms'
-import { AppComponent } from './app.component'
-import { LibroFilter } from './libro.pipe'
-import { LibroService } from './libro.service'
-import StubLibroService from './stub.libro.service'
-import Libro from './domain/libro'
-
-let fixture : ComponentFixture<AppComponent>
-let app : AppComponent
-let libroService: LibroService
+import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { FormsModule } from '@angular/forms';
+import { AppComponent } from './app.component';
+import { LibroFilter } from './libro.pipe';
+import { LibroService } from './libro.service';
+import StubLibroService from './stub.libro.service';
 
 describe('AppComponent', () => {
-  
+  let fixture : ComponentFixture<AppComponent>
+  let app : AppComponent
+  let libroService: LibroService
+    
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       declarations: [
@@ -38,7 +36,7 @@ describe('AppComponent', () => {
     expect(app.title).toEqual('app')
   }))
   it('should render title in a h1 tag', async(() => {
-    existeTituloDeValor('Búsqueda de libros')
+    existeTitulo('Búsqueda de libros')
   }))
   it('should return ok books', async(() => {
     existeUnaColumnaDeValor('Rayuela')
@@ -56,7 +54,7 @@ describe('AppComponent', () => {
     existeUnaColumnaDeValor('Ficciones')
   }))  
 
-  function existeTituloDeValor(valor: string) {
+  function existeTitulo(valor: string) {
     existeTag('.card-title', valor)
   }
   

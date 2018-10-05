@@ -25,7 +25,7 @@ function encontrar(criterioBusqueda: string, titulo: string) {
   const pipe = new LibroFilter()
   const librosFiltrados: Array<Libro> = pipe.transform(libros, criterioBusqueda)
   expect(librosFiltrados.length).toBe(1)
-  const rayuela = librosFiltrados.pop()
-  expect(rayuela.titulo).toBe(titulo)
+  const libroEncontrado = librosFiltrados.pop()
+  expect(libroEncontrado.titulo).toBe(titulo)
 }
 
