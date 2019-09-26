@@ -33,10 +33,9 @@ En la propiedad scripts ubicamos los archivos javascript de Material Design for 
 
 ```json
     "scripts": [
-        "./node_modules/mdbootstrap/js/jquery-3.3.1.min.js",
+        "./node_modules/mdbootstrap/js/jquery-3.4.1.min.js",
         "./node_modules/mdbootstrap/js/bootstrap.min.js",
         "./node_modules/mdbootstrap/js/popper.min.js",
-        "./node_modules/mdbootstrap/js/mdb.min.js" 
     ]
 ```
 
@@ -55,7 +54,6 @@ Otra opción es ubicarlos en el index, como se muestra a continuación:
 ```
 
 Esta opción requiere conexión online a internet, mientras que la opción anterior utiliza los archivos ya descargados en el directorio node_modules cuando lo instalamos con el npm.
-
 
 ## Font Awesome
 
@@ -80,7 +78,7 @@ Además del esquema MVC que propone Angular (una vista principal app.component.h
 Para crear el service utilizamos un comando propio de Angular CLI:
 
 ```bash
-$ ng generate service libro
+ng generate service libro
 ```
 
 Esto genera el archivo libro.service.ts y su correspondiente test libro.service.spec.ts

@@ -6,10 +6,10 @@ import { LibroService } from './libro.service';
 import StubLibroService from './stub.libro.service';
 
 describe('AppComponent', () => {
-  let fixture : ComponentFixture<AppComponent>
-  let app : AppComponent
+  let fixture: ComponentFixture<AppComponent>
+  let app: AppComponent
   let libroService: LibroService
-    
+
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       declarations: [
@@ -52,27 +52,27 @@ describe('AppComponent', () => {
     fixture.detectChanges()
     noExisteUnaColumnaDeValor('Rayuela')
     existeUnaColumnaDeValor('Ficciones')
-  }))  
+  }))
 
   function existeTitulo(valor: string) {
     existeTag('.card-title', valor)
   }
-  
+
   function noExisteUnaColumnaDeValor(valor: string) {
     noExisteTag('td', valor)
   }
-  
+
   function existeUnaColumnaDeValor(valor: string) {
     existeTag('td', valor)
   }
-  
+
   function existeTag(tag: string, valor: string) {
     const compiled = fixture.debugElement.nativeElement
     expect(compiled.querySelector(tag).textContent).toContain(valor)
   }
-  
+
   function noExisteTag(tag: string, valor: string) {
     const compiled = fixture.debugElement.nativeElement
     expect(compiled.querySelector(tag).textContent).not.toContain(valor)
-  }  
+  }
 })

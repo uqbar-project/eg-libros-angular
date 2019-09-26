@@ -12,9 +12,14 @@ describe('LibroService', () => {
   it('should be created', inject([LibroService], (service: LibroService) => {
     expect(service).toBeTruthy()
   }))
-  it('should return Kryptonita book', inject([LibroService], (service: LibroService) => {
-    const libros = service.libros
-    const kryptonita = libros.find((libro: Libro) => libro.titulo.startsWith('Kryptonita'))
-    expect(kryptonita).toBeTruthy()
+  it('should find a known book', inject([LibroService], (service: LibroService) => {
+    expect(buscarLibros(service.libros, 'Kryptonita')).toBeTruthy()
+  }))
+  it('should not find a not existing book', inject([LibroService], (service: LibroService) => {
+    expect(buscarLibros(service.libros, 'Zarakatunga')).toBeFalsy()
   }))
 })
+
+function buscarLibros(libros: Libro[], tituloStartsWith: string) {
+  return libros.some((libro: Libro) => libro.titulo.startsWith(tituloStartsWith))
+}
