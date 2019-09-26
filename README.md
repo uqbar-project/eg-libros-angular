@@ -87,7 +87,7 @@ La implementación es simplemente una lista _hardcoded_ de valores, aunque más 
 
 ```typescript
 export class LibroService {
-  libros: Array<Libro>
+  libros: Libro[]
 
   constructor() {
       this.libros = [
@@ -115,26 +115,65 @@ Luego, en cada test recibimos la referencia al servicio mockeado para poder util
   it('should be created', inject([LibroService], (service: LibroService) => {
     expect(service).toBeTruthy()
   }))
-  it('should return Kryptonita book', inject([LibroService], (service: LibroService) => {
-    const libros = service.libros
-    const kryptonita = libros.find((libro: Libro) => libro.titulo.startsWith('Kryptonita'))
-    expect(kryptonita).toBeTruthy()
-  }))
 })
 ```
 
 En este caso no es demasiado interesante lo que ocurre, el servicio mockeado coincide con el servicio original. Pero cuando tenemos que acceder a servicios remotos (y presumiblemente costosos), podemos reemplazar el comportamiento del service por otro más controlado para facilitar las pruebas unitarias. Y a su vez también podemos hacer esto para testear nuestros componentes de Angular. En ejemplos posteriores veremos más en profundidad este tema.
 
+La implementación del servicio se haría sobre dos clases de equivalencia:
+
+- la primera, el caso exitoso: el servicio nos devuelve un libro que existe
+- la segunda, un caso no exitoso: el servicio no encuentra un libro
+
+### Primer test
+
+Escribimos el primer test:
+
+```ts
+  it('should find a known book', inject([LibroService], (service: LibroService) => {
+    const existeLibro = libros.some((libro: Libro) => libro.titulo.startsWith('Kryptonita'))
+    expect(existeLibro).toBeTruthy()
+  }))
+```
+
+Como siempre, el uso del método `some` (similar al `any` de Wollok, o `exists` de Xtend) es preferible a:
+
+- preguntar si el size > 0
+- preguntar si no es empty
+- preguntar si find !== null
+
+porque estamos expresando lo mismo más explícitamente, queremos saber si **hay algún libro**.
+
+### Refactor del test
+
+Pero al empezar a codificar el segundo test nos damos cuenta que en ambos casos tenemos un mismo patrón de comportamiento: le pedimos los libros al servicio y queremos saber si alguno de los libros cumple que el título tenga una condición. Por eso vamos a crear una función:
+
+```ts
+function buscarLibros(libros: Libro[], tituloStartsWith: string) {
+  return libros.some((libro: Libro) => libro.titulo.startsWith(tituloStartsWith))
+}
+```
+
+Después, en cada test, vamos a pedir que se cumpla y que no se cumpla respectivamente:
+
+```ts
+  it('should find a known book', inject([LibroService], (service: LibroService) => {
+    expect(buscarLibros(service.libros, 'Kryptonita')).toBeTruthy()
+  }))
+  it('should not find a not existing book', inject([LibroService], (service: LibroService) => {
+    expect(buscarLibros(service.libros, 'Zarakatunga')).toBeFalsy()
+  }))
+```
 
 # Pipe
 
 También creamos un pipe mediante un comando Angular CLI:
 
 ```bash
-$ ng generate pipe libro
+ng generate pipe libro
 ```
 
-Esto genera el archivo libro.pipe.ts y su correspondiente test libro.pipe.spec.ts.
+Esto genera el archivo libro.pipe.ts y su correspondiente test `libro.pipe.spec.ts`.
 
 El pipe sabe hacer la búsqueda por título o autor en base al valor ingresado (cuando no hay nada ingresado no se aplica ningún filtro); esto lo resuelve la implementación del método transform que define la interfaz de un pipe de Angular:
 
@@ -144,10 +183,10 @@ El pipe sabe hacer la búsqueda por título o autor en base al valor ingresado (
 })
 export class LibroFilter implements PipeTransform {
 
-  transform(libros: Array<Libro>, libroABuscar: string): any {
-    return libros.filter(libro => 
-      libroABuscar === "" || this.coincide(libro.titulo, libroABuscar) || this.coincide(libro.autor, libroABuscar)
-    ) 
+  transform(libros: Libro[], libroABuscar: string): Libro[] {
+    return libros.filter(libro =>
+      !libroABuscar || this.coincide(libro.titulo, libroABuscar) || this.coincide(libro.autor, libroABuscar)
+    )
   }
 
   coincide(valor1: string, valor2: string) {
@@ -182,17 +221,17 @@ describe('LibroPipe', () => {
   })
   it('filter by title works (case insensitive)', () => {
     const pipe = new LibroFilter()
-    const librosFiltrados : Array<Libro> = pipe.transform(libros, "rayu")
+    const librosFiltrados : Libro[] = pipe.transform(libros, 'rayu')
     expect(librosFiltrados.length).toBe(1)
     const rayuela = librosFiltrados.pop()
-    expect(rayuela.titulo).toBe("Rayuela")
+    expect(rayuela.titulo).toBe('Rayuela')
   })
   it('filter by author works (case insensitive)', () => {
     const pipe = new LibroFilter()
-    const librosFiltrados : Array<Libro> = pipe.transform(libros, "bor")
+    const librosFiltrados : Libro[] = pipe.transform(libros, 'bor')
     expect(librosFiltrados.length).toBe(1)
     const ficciones = librosFiltrados.pop()
-    expect(ficciones.titulo).toBe("Ficciones")
+    expect(ficciones.titulo).toBe('Ficciones')
   })
 })
 ```
@@ -201,19 +240,19 @@ Mmm... hay algo de código repetido, hagamos un pequeño refactor:
 
 ```typescript
   it('filter by title works (case insensitive)', () => {
-    encontrar("rayu", "Rayuela")
+    encontrar('rayu', 'Rayuela')
   })
   it('filter by author works (case insensitive)', () => {
-    encontrar("bor", "Ficciones")
+    encontrar('bor', 'Ficciones')
   })
 })
 
 function encontrar(criterioBusqueda: string, titulo: string) {
   const pipe = new LibroFilter()
-  const librosFiltrados: Array<Libro> = pipe.transform(libros, criterioBusqueda)
+  const librosFiltrados: Libro[] = pipe.transform(libros, criterioBusqueda)
   expect(librosFiltrados.length).toBe(1)
-  const rayuela = librosFiltrados.pop()
-  expect(rayuela.titulo).toBe(titulo)
+  const lastBook = librosFiltrados.pop()
+  expect(lastBook.titulo).toBe(titulo)
 }
 ```
 
@@ -254,9 +293,9 @@ El controller (_app.component.ts_) delega la búsqueda de los libros al service 
 ```typescript
 export class AppComponent implements OnInit {
   title = 'app'
-  librosService : LibroService
-  libroABuscar : String = ''
-  libros : Array<Libro> = []
+  librosService: LibroService
+  libroABuscar: String = ''
+  libros: Libro[] = []
   
   constructor(librosService: LibroService) {
     this.librosService = librosService
