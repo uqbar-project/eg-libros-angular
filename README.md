@@ -7,15 +7,15 @@
 Lo creamos mediante Angular CLI,
 
 ```bash
-$ ng new eg-libros-angular
+ng new eg-libros-angular
 ```
 
 ## Material Design for Bootstrap
 
 Luego necesitamos las dependencias de Material Design for Bootstrap
- 
+
 ```bash
-$ npm install mdbootstrap
+npm install mdbootstrap
 ```
 
 Siguiendo [este tutorial](https://medium.com/codingthesmartway-com-blog/using-bootstrap-with-angular-c83c3cee3f4a) dentro de la propiedad styles del archivo _angular.json_ del raíz agregamos los archivos css:
@@ -25,7 +25,7 @@ Siguiendo [este tutorial](https://medium.com/codingthesmartway-com-blog/using-bo
         "src/styles.css",
         "./node_modules/mdbootstrap/css/bootstrap.min.css",
         "./node_modules/mdbootstrap/css/mdb.min.css",
-        "./node_modules/mdbootstrap/css/style.css"              
+        "./node_modules/mdbootstrap/css/style.css"
     ],
 ```
 
@@ -71,7 +71,7 @@ Además del esquema MVC que propone Angular (una vista principal app.component.h
 
 - nuestro clásico objeto de dominio, un Libro
 - un objeto encargado de proveer la lista de libros, que es parte de la arquitectura de Angular: un LibroService
-- y un objeto que será encargado de hacer el filtro cuando el usuario escriba un valor a buscar, LibroFilter que forma parte de la arquitectura de Angular llamada _pipe_ (hemos visto un _pipe_ predeterminado que es el que transforma un valor decimal según el formato de una configuración regional para que por ejemplo considere la coma decimal en lugar del punto) 
+- y un objeto que será encargado de hacer el filtro cuando el usuario escriba un valor a buscar, LibroFilter que forma parte de la arquitectura de Angular llamada _pipe_ (hemos visto un _pipe_ predeterminado que es el que transforma un valor decimal según el formato de una configuración regional para que por ejemplo considere la coma decimal en lugar del punto)
 
 # Service
 
@@ -404,7 +404,7 @@ function existeUnaColumnaDeValor(compiled: any, valor: string) {
 }
 ```
 
-Un detalle no menor es que **elevamos el nivel de abstracción**: antes pedíamos que hubiera un tag `<td>` que cumpliera ciertas condiciones. Ahora hablamos del concepto de "columna", más cercano al usuario y menos a cómo se implementa (podría ser un div y no un td). Esto es fundamental para lograr que nuestros tests mejoren en mantenibilidad. 
+Un detalle no menor es que **elevamos el nivel de abstracción**: antes pedíamos que hubiera un tag `<td>` que cumpliera ciertas condiciones. Ahora hablamos del concepto de "columna", más cercano al usuario y menos a cómo se implementa (podría ser un div y no un td). Esto es fundamental para lograr que nuestros tests mejoren en mantenibilidad.
 
 Un nuevo paso en nuestro refactor sería:
 
