@@ -9,13 +9,10 @@ import { LibroService } from './libro.service'
 })
 export class AppComponent implements OnInit {
   title = 'app'
-  librosService: LibroService
   libroABuscar: String = ''
   libros: Libro[] = []
 
-  constructor(librosService: LibroService) {
-    this.librosService = librosService
-  }
+  constructor(public librosService: LibroService) { }
 
   ngOnInit(): void {
     this.libros = this.librosService.libros

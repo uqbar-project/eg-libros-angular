@@ -1,9 +1,9 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-import { FormsModule } from '@angular/forms';
-import { AppComponent } from './app.component';
-import { LibroFilter } from './libro.pipe';
-import { LibroService } from './libro.service';
-import StubLibroService from './stub.libro.service';
+import { async, ComponentFixture, TestBed } from '@angular/core/testing'
+import { FormsModule } from '@angular/forms'
+import { AppComponent } from './app.component'
+import { LibroFilter } from './libro.pipe'
+import { LibroService } from './libro.service'
+import StubLibroService from './stub.libro.service'
 
 describe('AppComponent', () => {
   let fixture: ComponentFixture<AppComponent>
