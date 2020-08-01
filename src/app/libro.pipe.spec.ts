@@ -4,19 +4,19 @@ import { LibroFilter } from './libro.pipe'
 const libros = [new Libro('Rayuela', 'Cortazar'), new Libro('Ficciones', 'Borges')]
 
 describe('LibroPipe', () => {
-  it('create an instance', () => {
+  it('creates an instance', () => {
     const pipe = new LibroFilter()
     expect(pipe).toBeTruthy()
   })
-  it('empty filter returns same collection of books', () => {
+  it('returns same collection of books when no filter is applied', () => {
     const pipe = new LibroFilter()
     const librosFiltrados = pipe.transform(libros, '')
     expect(librosFiltrados.length).toBe(2)
   })
-  it('filter by title works (case insensitive)', () => {
+  it('filters by title (case insensitive)', () => {
     encontrar('rayu', 'Rayuela')
   })
-  it('filter by author works (case insensitive)', () => {
+  it('filters by author (case insensitive)', () => {
     encontrar('bor', 'Ficciones')
   })
 })

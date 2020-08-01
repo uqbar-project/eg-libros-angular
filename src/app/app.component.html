@@ -15,16 +15,8 @@
 					<th>Autor</th>
 				</tr>
 				<tr *ngFor="let libro of libros | libroFilter: libroABuscar">
-					<td>
-						<span data-testid="titulo">
-							{{libro.titulo}}
-						</span>
-					</td>
-					<td>
-						<span data-testid="autor">
-							{{libro.autor}}
-						</span>
-					</td>
+					<td data-testid="titulo">{{libro.titulo}}</td>
+					<td data-testid="autor">{{libro.autor}}</td>
 				</tr>
 			</table>
 		</div>

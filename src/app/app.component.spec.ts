@@ -34,7 +34,7 @@ describe('AppComponent', () => {
   it('should create the app', async(() => {
     expect(app).toBeTruthy()
   }))
-  it('should return ok books', async(() => {
+  it('should return ok all books', async(() => {
     const filasLibros = getAllByTestId(fixture, 'titulo')
     expect(filasLibros.length).toBe(2)
     expect(filasLibros[0].textContent.trim()).toBe('Rayuela')

@@ -154,6 +154,14 @@ function buscarLibros(libros: Libro[], tituloStartsWith: string) {
 }
 ```
 
+o bien podemos armarla con la sintaxis de _lambdas_:
+
+```ts
+const buscarLibros = (libros: Libro[], tituloStartsWith: string) => {
+  return libros.some((libro: Libro) => libro.titulo.startsWith(tituloStartsWith))
+}
+```
+
 Después, en cada test, vamos a pedir que se cumpla y que no se cumpla respectivamente:
 
 ```ts
@@ -214,19 +222,19 @@ Luego del típico test de creación del filtro exitosa, vamos a realizar estas p
 ```typescript
 describe('LibroPipe', () => {
   ...
-  it('empty filter returns same collection of books', () => {
+  it('returns same collection of books when no filter is applied', () => {
     const pipe = new LibroFilter()
-    const librosFiltrados = pipe.transform(libros, "")
+    const librosFiltrados = pipe.transform(libros, '')
     expect(librosFiltrados.length).toBe(2)
   })
-  it('filter by title works (case insensitive)', () => {
+  it('filters by title (case insensitive)', () => {
     const pipe = new LibroFilter()
     const librosFiltrados : Libro[] = pipe.transform(libros, 'rayu')
     expect(librosFiltrados.length).toBe(1)
     const rayuela = librosFiltrados.pop()
     expect(rayuela.titulo).toBe('Rayuela')
   })
-  it('filter by author works (case insensitive)', () => {
+  it('filters by author (case insensitive)', () => {
     const pipe = new LibroFilter()
     const librosFiltrados : Libro[] = pipe.transform(libros, 'bor')
     expect(librosFiltrados.length).toBe(1)
@@ -239,15 +247,15 @@ describe('LibroPipe', () => {
 Mmm... hay algo de código repetido, hagamos un pequeño refactor:
 
 ```typescript
-  it('filter by title works (case insensitive)', () => {
+  it('filters by title (case insensitive)', () => {
     encontrar('rayu', 'Rayuela')
   })
-  it('filter by author works (case insensitive)', () => {
+  it('filters by author (case insensitive)', () => {
     encontrar('bor', 'Ficciones')
   })
 })
 
-function encontrar(criterioBusqueda: string, titulo: string) {
+const encontrar = (criterioBusqueda: string, titulo: string) => {
   const pipe = new LibroFilter()
   const librosFiltrados: Libro[] = pipe.transform(libros, criterioBusqueda)
   expect(librosFiltrados.length).toBe(1)
@@ -275,14 +283,14 @@ En sí la aplicación tiene una vista _app.component.html_ con componentes propi
 
 ```html
 <table class="table table-striped table-bordered table-hover">
-    <tr class="cyan lighten-4">
-        <th>Titulo</th>
-        <th>Autor</th>
-    </tr>
-    <tr *ngFor="let libro of libros | libroFilter: libroABuscar">
-        <td>{{libro.titulo}}</td>
-        <td>{{libro.autor}}</td>
-    </tr>
+  <tr class="cyan lighten-4">
+    <th>Titulo</th>
+    <th>Autor</th>
+  </tr>
+  <tr *ngFor="let libro of libros | libroFilter: libroABuscar">
+    <td data-testid="titulo">{{libro.titulo}}</td>
+    <td data-testid="autor">{{libro.autor}}</td>
+  </tr>
 </table>
 ```
 
@@ -294,7 +302,7 @@ El controller (_app.component.ts_) delega la búsqueda de los libros al service 
 export class AppComponent implements OnInit {
   title = 'app'
   librosService: LibroService
-  libroABuscar: String = ''
+  libroABuscar = ''
   libros: Libro[] = []
   
   constructor(librosService: LibroService) {
@@ -315,7 +323,7 @@ En lugar de trabajar con el servicio que definimos, vamos a construir un stub de
 
 ```typescript
 export default class StubLibroService {
-    libros = [new Libro('Rayuela', 'Cortazar'), new Libro('Ficciones', 'Borges') ]
+  libros = [new Libro('Rayuela', 'Cortazar'), new Libro('Ficciones', 'Borges') ]
 }
 ```
 
@@ -323,7 +331,6 @@ Ese stub lo vamos a inyectar dentro del componente principal AppComponent en la 
 
 ```typescript
 describe('AppComponent', () => {
-  
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       declarations: [
@@ -352,105 +359,48 @@ Mediante la configuración _providers_ agregamos el stub que luego se pasa a la 
 - que podemos filtrar por autor (el mismo resultado que en el test anterior)
 
 ```typescript
-  it('should return ok books', async(() => {
-    const compiled = fixture.debugElement.nativeElement
-    expect(compiled.querySelector('td').textContent).toContain('Rayuela')
-  }))
-  it('should filter ok books by title', async(() => {
-    app.libroABuscar = 'Fic'
-    fixture.detectChanges()
-    const compiled = fixture.debugElement.nativeElement
-    expect(compiled.querySelector('td').textContent).not.toContain('Rayuela')
-    expect(compiled.querySelector('td').textContent).toContain('Ficciones')
-  }))
-  it('should filter ok books by author', async(() => {
-    app.libroABuscar = 'bor'
-    fixture.detectChanges()
-    const compiled = fixture.debugElement.nativeElement
-    expect(compiled.querySelector('td').textContent).not.toContain('Rayuela')
-    expect(compiled.querySelector('td').textContent).toContain('Ficciones')
-  }))
+it('should return ok all books', async(() => {
+  const filasLibros = getAllByTestId(fixture, 'titulo')
+  expect(filasLibros.length).toBe(2)
+  expect(filasLibros[0].textContent.trim()).toBe('Rayuela')
+}))
+it('should filter ok books by title', async(() => {
+  app.libroABuscar = 'Fic'
+  fixture.detectChanges()
+  soloHayUnLibro(fixture, 'Ficciones')
+}))
+it('should filter ok books by author', async(() => {
+  app.libroABuscar = 'bor'
+  fixture.detectChanges()
+  soloHayUnLibro(fixture, 'Ficciones')
+}))
 ```
 
-Aquí también tenemos una oportunidad para refactorizar:
+**No podemos definir un `data-testid` dinámicamente, porque Angular lo envuelve en un identificador que solo él entiende**, por lo tanto la técnica que aquí usamos fue:
 
-```typescript
-  it('should return ok books', async(() => {
-    const compiled = fixture.debugElement.nativeElement
-    existeUnaColumnaDeValor(compiled, 'Rayuela')
-  }))
-  it('should filter ok books by title', async(() => {
-    app.libroABuscar = 'Fic'
-    fixture.detectChanges()
-    const compiled = fixture.debugElement.nativeElement
-    noExisteUnaColumnaDeValor(compiled, 'Rayuela')
-    existeUnaColumnaDeValor(compiled, 'Ficciones')
-  }))
-  it('should filter ok books by author', async(() => {
-    app.libroABuscar = 'bor'
-    fixture.detectChanges()
-    const compiled = fixture.debugElement.nativeElement
-    noExisteUnaColumnaDeValor(compiled, 'Rayuela')
-    existeUnaColumnaDeValor(compiled, 'Ficciones')
-  }))  
-})
+- definir un `data-testid` general para identificar las columnas título y autor, en el html:
 
-function noExisteUnaColumnaDeValor(compiled: any, valor: string) {
-  expect(compiled.querySelector('td').textContent).not.toContain(valor)
-}
+```html
+<td data-testid="titulo">{{libro.titulo}}</td>
+```
 
-function existeUnaColumnaDeValor(compiled: any, valor: string) {
-  expect(compiled.querySelector('td').textContent).toContain(valor)
+- en lugar de buscar un solo data-testid específico, recuperaremos todos los data-testid que contengan "título". Esto lo hacemos en una función auxiliar, en el archivo `test-utils.ts`:
+
+```ts
+export const getAllByTestId = (appComponent: any, testId: string) => {
+  const compiled = appComponent.debugElement.nativeElement
+  return compiled.querySelectorAll(`[data-testid="${testId}"]`)
 }
 ```
 
-Un detalle no menor es que **elevamos el nivel de abstracción**: antes pedíamos que hubiera un tag `<td>` que cumpliera ciertas condiciones. Ahora hablamos del concepto de "columna", más cercano al usuario y menos a cómo se implementa (podría ser un div y no un td). Esto es fundamental para lograr que nuestros tests mejoren en mantenibilidad.
+- y por último, generamos una abstracción de más alto nivel, la función que nos permite saber si hay un solo libro cuyo título sea un valor específico
 
-Un nuevo paso en nuestro refactor sería:
-
-- evitar la duplicación en cada test de hacer `const compiled = fixture.debugElement.nativeElement`. Para eso, podemos aprovechar la variable fixture cuyo scope está enmarcado por el describe. Escribiremos funciones dentro del describe entonces, para no tener que pasar el fixture como parámetro
-- además, hay otro test que valida un título por la clase cardTitle. Haremos una función más general que buscará un tag (o clase) dentro del html resuelto. Como resultado, cada test queda mucho más chico:
-
-```typescript
-  it('should render title in a h1 tag', async(() => {
-    existeTituloDeValor('Búsqueda de libros')
-  }))
-  it('should return ok books', async(() => {
-    existeUnaColumnaDeValor('Rayuela')
-  }))
-  it('should filter ok books by title', async(() => {
-    app.libroABuscar = 'Fic'
-    fixture.detectChanges()
-    noExisteUnaColumnaDeValor('Rayuela')
-    existeUnaColumnaDeValor('Ficciones')
-  }))
-  it('should filter ok books by author', async(() => {
-    app.libroABuscar = 'bor'
-    fixture.detectChanges()
-    noExisteUnaColumnaDeValor('Rayuela')
-    existeUnaColumnaDeValor('Ficciones')
-  }))  
-
-  function existeTituloDeValor(valor: string) {
-    existeTag('.card-title', valor)
-  }
-  
-  function noExisteUnaColumnaDeValor(valor: string) {
-    noExisteTag('td', valor)
-  }
-  
-  function existeUnaColumnaDeValor(valor: string) {
-    existeTag('td', valor)
-  }
-  
-  function existeTag(tag: string, valor: string) {
-    const compiled = fixture.debugElement.nativeElement
-    expect(compiled.querySelector(tag).textContent).toContain(valor)
-  }
-  
-  function noExisteTag(tag: string, valor: string) {
-    const compiled = fixture.debugElement.nativeElement
-    expect(compiled.querySelector(tag).textContent).not.toContain(valor)
-  }  
-})
+```ts
+const soloHayUnLibro = (fixture: any, titulo: string) => {
+  const filasLibros = getAllByTestId(fixture, 'titulo')
+  expect(filasLibros.length).toBe(1)
+  expect(filasLibros[0].textContent.trim()).toBe(titulo)
+}
 ```
+
+- podemos además validar la cantidad de libros que recibimos tras aplicar la búsqueda: de esa manera tenemos tests unitarios (el pipe, el service) y de integración (el componente que llama al pipe, el service no participa de esta integración ya que lo estamos mockeando, [Martin Fowler](https://martinfowler.com/bliki/UnitTest.html) diría que es un test social en cuanto al pipe pero solitario en cuanto al service)
