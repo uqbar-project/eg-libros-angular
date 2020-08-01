@@ -1,5 +1,5 @@
+import { Libro } from './domain/libro'
 import { LibroFilter } from './libro.pipe'
-import Libro from './domain/libro'
 
 const libros = [new Libro('Rayuela', 'Cortazar'), new Libro('Ficciones', 'Borges')]
 
@@ -21,11 +21,10 @@ describe('LibroPipe', () => {
   })
 })
 
-function encontrar(criterioBusqueda: string, titulo: string) {
+const encontrar = (criterioBusqueda: string, titulo: string) => {
   const pipe = new LibroFilter()
   const librosFiltrados: Libro[] = pipe.transform(libros, criterioBusqueda)
   expect(librosFiltrados.length).toBe(1)
   const lastBook = librosFiltrados.pop()
   expect(lastBook.titulo).toBe(titulo)
 }
-

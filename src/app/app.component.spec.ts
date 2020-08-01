@@ -1,5 +1,7 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing'
 import { FormsModule } from '@angular/forms'
+import { getAllByTestId } from 'src/utils/test-utils'
+
 import { AppComponent } from './app.component'
 import { LibroFilter } from './libro.pipe'
 import { LibroService } from './libro.service'
@@ -32,47 +34,25 @@ describe('AppComponent', () => {
   it('should create the app', async(() => {
     expect(app).toBeTruthy()
   }))
-  it(`should have as title 'app'`, async(() => {
-    expect(app.title).toEqual('app')
-  }))
-  it('should render title in a h1 tag', async(() => {
-    existeTitulo('Búsqueda de libros')
-  }))
   it('should return ok books', async(() => {
-    existeUnaColumnaDeValor('Rayuela')
+    const filasLibros = getAllByTestId(fixture, 'titulo')
+    expect(filasLibros.length).toBe(2)
+    expect(filasLibros[0].textContent.trim()).toBe('Rayuela')
   }))
   it('should filter ok books by title', async(() => {
     app.libroABuscar = 'Fic'
     fixture.detectChanges()
-    noExisteUnaColumnaDeValor('Rayuela')
-    existeUnaColumnaDeValor('Ficciones')
+    soloHayUnLibro(fixture, 'Ficciones')
   }))
   it('should filter ok books by author', async(() => {
     app.libroABuscar = 'bor'
     fixture.detectChanges()
-    noExisteUnaColumnaDeValor('Rayuela')
-    existeUnaColumnaDeValor('Ficciones')
+    soloHayUnLibro(fixture, 'Ficciones')
   }))
-
-  function existeTitulo(valor: string) {
-    existeTag('.card-title', valor)
-  }
-
-  function noExisteUnaColumnaDeValor(valor: string) {
-    noExisteTag('td', valor)
-  }
-
-  function existeUnaColumnaDeValor(valor: string) {
-    existeTag('td', valor)
-  }
-
-  function existeTag(tag: string, valor: string) {
-    const compiled = fixture.debugElement.nativeElement
-    expect(compiled.querySelector(tag).textContent).toContain(valor)
-  }
-
-  function noExisteTag(tag: string, valor: string) {
-    const compiled = fixture.debugElement.nativeElement
-    expect(compiled.querySelector(tag).textContent).not.toContain(valor)
-  }
 })
+
+const soloHayUnLibro = (fixture: any, titulo: string) => {
+  const filasLibros = getAllByTestId(fixture, 'titulo')
+  expect(filasLibros.length).toBe(1)
+  expect(filasLibros[0].textContent.trim()).toBe(titulo)
+}

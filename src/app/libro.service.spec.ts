@@ -1,5 +1,6 @@
-import { TestBed, inject } from '@angular/core/testing'
-import Libro from './domain/libro'
+import { inject, TestBed } from '@angular/core/testing'
+
+import { Libro } from './domain/libro'
 import { LibroService } from './libro.service'
 
 describe('LibroService', () => {
@@ -20,6 +21,6 @@ describe('LibroService', () => {
   }))
 })
 
-function buscarLibros(libros: Libro[], tituloStartsWith: string) {
+const buscarLibros = (libros: Libro[], tituloStartsWith: string) => {
   return libros.some((libro: Libro) => libro.titulo.startsWith(tituloStartsWith))
 }

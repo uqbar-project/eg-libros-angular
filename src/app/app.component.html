@@ -15,8 +15,16 @@
 					<th>Autor</th>
 				</tr>
 				<tr *ngFor="let libro of libros | libroFilter: libroABuscar">
-					<td>{{libro.titulo}}</td>
-					<td>{{libro.autor}}</td>
+					<td>
+						<span data-testid="titulo">
+							{{libro.titulo}}
+						</span>
+					</td>
+					<td>
+						<span data-testid="autor">
+							{{libro.autor}}
+						</span>
+					</td>
 				</tr>
 			</table>
 		</div>

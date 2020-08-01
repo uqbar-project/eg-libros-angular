@@ -1,5 +1,6 @@
 import { Pipe, PipeTransform } from '@angular/core'
-import Libro from './domain/libro'
+
+import { Libro } from './domain/libro'
 
 @Pipe({ name: 'libroFilter' })
 export class LibroFilter implements PipeTransform {

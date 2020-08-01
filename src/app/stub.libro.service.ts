@@ -1,4 +1,4 @@
-import Libro from './domain/libro'
+import { Libro } from './domain/libro'
 
 export default class StubLibroService {
     libros = [

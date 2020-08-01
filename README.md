@@ -33,7 +33,7 @@ En la propiedad scripts ubicamos los archivos javascript de Material Design for 
 
 ```json
     "scripts": [
-        "./node_modules/mdbootstrap/js/jquery-3.4.1.min.js",
+        "./node_modules/mdbootstrap/js/jquery.min.js",
         "./node_modules/mdbootstrap/js/bootstrap.min.js",
         "./node_modules/mdbootstrap/js/popper.min.js",
     ]

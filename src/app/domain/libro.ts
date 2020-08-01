@@ -1,11 +1,3 @@
-export default class Libro {
-
-    titulo: string
-    autor: string
-
-    constructor(titulo: string, autor: string) {
-        this.titulo = titulo
-        this.autor = autor
-    }
-
+export class Libro {
+    constructor(public titulo: string, public autor: string) { }
 }

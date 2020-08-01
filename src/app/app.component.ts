@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core'
-import Libro from './domain/libro'
+
+import { Libro } from './domain/libro'
 import { LibroService } from './libro.service'
 
 @Component({
@@ -9,7 +10,7 @@ import { LibroService } from './libro.service'
 })
 export class AppComponent implements OnInit {
   title = 'app'
-  libroABuscar: String = ''
+  libroABuscar = ''
   libros: Libro[] = []
 
   constructor(public librosService: LibroService) { }
