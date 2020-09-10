@@ -138,8 +138,8 @@ Escribimos el primer test:
 
 Como siempre, el uso del método `some` (similar al `any` de Wollok, o `exists` de Xtend) es preferible a:
 
-- preguntar si el size > 0
-- preguntar si no es empty
+- hacer un filter y preguntar si el size de la colección resultante es > 0
+- hacer un filter y preguntar si la colección resultante no es empty
 - preguntar si find !== null
 
 porque estamos expresando lo mismo más explícitamente, queremos saber si **hay algún libro**.
@@ -301,13 +301,10 @@ El controller (_app.component.ts_) delega la búsqueda de los libros al service 
 ```typescript
 export class AppComponent implements OnInit {
   title = 'app'
-  librosService: LibroService
   libroABuscar = ''
   libros: Libro[] = []
   
-  constructor(librosService: LibroService) {
-    this.librosService = librosService
-  }
+  constructor(public librosService: LibroService) { }
   
   ngOnInit(): void {
     this.libros = this.librosService.libros
