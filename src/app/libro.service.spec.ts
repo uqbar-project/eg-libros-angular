@@ -14,10 +14,10 @@ describe('LibroService', () => {
     expect(service).toBeTruthy()
   }))
   it('should find a known book', inject([LibroService], (service: LibroService) => {
-    expect(buscarLibros(service.libros, 'Kryptonita')).toBeTruthy()
+    expect(buscarLibros(service.buscarLibros(), 'Kryptonita')).toBeTruthy()
   }))
   it('should not find a not existing book', inject([LibroService], (service: LibroService) => {
-    expect(buscarLibros(service.libros, 'Zarakatunga')).toBeFalsy()
+    expect(buscarLibros(service.buscarLibros(), 'Zarakatunga')).toBeFalsy()
   }))
 })
 

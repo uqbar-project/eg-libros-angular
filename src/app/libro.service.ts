@@ -6,7 +6,7 @@ import { Libro } from './domain/libro'
   providedIn: 'root'
 })
 export class LibroService {
-  libros: Libro[]
+  private libros: Libro[]
 
   constructor() {
     this.libros = [
@@ -22,4 +22,9 @@ export class LibroService {
       new Libro('Management 3.0', 'Jurgen')
     ]
   }
+
+  buscarLibros(): Libro[] {
+    return this.libros
+  }
+
 }

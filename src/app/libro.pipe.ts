@@ -15,3 +15,4 @@ export class LibroFilter implements PipeTransform {
       .match(valor2.toLowerCase())
   }
 }
+

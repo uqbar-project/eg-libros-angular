@@ -16,6 +16,6 @@ export class AppComponent implements OnInit {
   constructor(public librosService: LibroService) { }
 
   ngOnInit(): void {
-    this.libros = this.librosService.libros
+    this.libros = this.librosService.buscarLibros()
   }
 }
