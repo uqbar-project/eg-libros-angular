@@ -373,7 +373,7 @@ it('should filter ok books by author', async(() => {
 }))
 ```
 
-**No podemos definir un `data-testid` dinámicamente, porque Angular lo envuelve en un identificador que solo él entiende**, por lo tanto la técnica que aquí usamos fue:
+Para no trabajar con un identificador unívoco en libro, la técnica alternativa que utilizamos aquí fue:
 
 - definir un `data-testid` general para identificar las columnas título y autor, en el html:
 
