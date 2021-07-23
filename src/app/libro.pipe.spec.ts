@@ -26,5 +26,5 @@ const encontrar = (criterioBusqueda: string, titulo: string) => {
   const librosFiltrados: Libro[] = pipe.transform(libros, criterioBusqueda)
   expect(librosFiltrados.length).toBe(1)
   const lastBook = librosFiltrados.pop()
-  expect(lastBook.titulo).toBe(titulo)
+  expect(lastBook?.titulo).toBe(titulo)
 }

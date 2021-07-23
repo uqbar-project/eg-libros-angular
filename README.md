@@ -1,6 +1,6 @@
 # Búsqueda de libros básica
 
-[![Build Status](https://travis-ci.org/uqbar-project/eg-libros-angular.svg?branch=master)](https://travis-ci.org/uqbar-project/eg-libros-angular)
+[![Build](https://github.com/uqbar-project/eg-libros-angular/actions/workflows/build.yml/badge.svg)](https://github.com/uqbar-project/eg-libros-angular/actions/workflows/build.yml) ![Coverage](./badges/eg-libros-angular/coverage.svg)
 
 # Creación del proyecto
 
@@ -35,7 +35,7 @@ En la propiedad scripts ubicamos los archivos javascript de Material Design for 
     "scripts": [
         "./node_modules/mdbootstrap/js/jquery.min.js",
         "./node_modules/mdbootstrap/js/bootstrap.min.js",
-        "./node_modules/mdbootstrap/js/popper.min.js",
+        "./node_modules/mdbootstrap/js/popper.min.js"
     ]
 ```
 

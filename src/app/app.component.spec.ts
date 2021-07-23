@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing'
+import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing'
 import { FormsModule } from '@angular/forms'
 import { getAllByTestId } from 'src/utils/test-utils'
 
@@ -12,7 +12,7 @@ describe('AppComponent', () => {
   let app: AppComponent
   let libroService: LibroService
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [
         AppComponent,
@@ -31,27 +31,27 @@ describe('AppComponent', () => {
     app.librosService = libroService
     fixture.detectChanges()
   }))
-  it('should create the app', async(() => {
+  it('should create the app', waitForAsync(() => {
     expect(app).toBeTruthy()
   }))
-  it('should return ok all books', async(() => {
+  it('should return ok all books', waitForAsync(() => {
     const filasLibros = getAllByTestId(fixture, 'titulo')
     expect(filasLibros.length).toBe(2)
     expect(filasLibros[0].textContent.trim()).toBe('Rayuela')
   }))
-  it('should filter ok books by title', async(() => {
+  it('should filter ok books by title', waitForAsync(() => {
     app.libroABuscar = 'Fic'
     fixture.detectChanges()
     soloHayUnLibro(fixture, 'Ficciones')
   }))
-  it('should filter ok books by author', async(() => {
+  it('should filter ok books by author', waitForAsync(() => {
     app.libroABuscar = 'bor'
     fixture.detectChanges()
     soloHayUnLibro(fixture, 'Ficciones')
   }))
 })
 
-const soloHayUnLibro = (fixture: any, titulo: string) => {
+function soloHayUnLibro(fixture: ComponentFixture<AppComponent>, titulo: string) {
   const filasLibros = getAllByTestId(fixture, 'titulo')
   expect(filasLibros.length).toBe(1)
   expect(filasLibros[0].textContent.trim()).toBe(titulo)
