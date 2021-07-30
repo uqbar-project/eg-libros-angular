@@ -7,6 +7,8 @@ import { LibroFilter } from './libro.pipe'
 import { LibroService } from './libro.service'
 import StubLibroService from './stub.libro.service'
 
+import './app.module'
+
 describe('AppComponent', () => {
   let fixture: ComponentFixture<AppComponent>
   let app: AppComponent
