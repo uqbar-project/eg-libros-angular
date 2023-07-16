@@ -55,12 +55,27 @@ Otra opción es ubicarlos en el index, como se muestra a continuación:
 
 Esta opción requiere conexión online a internet, mientras que la opción anterior utiliza los archivos ya descargados en el directorio node_modules cuando lo instalamos con el npm.
 
+
+### Configuración adicional
+
+En el `package.json` tuvimos que agregar [esta configuración](https://stackoverflow.com/questions/72511039/autoprefixer-replace-color-adjust-to-print-color-adjust-the-color-adjust-short):
+
+```json
+  "overrides": {
+    "autoprefixer": "10.4.5"
+  },  
+```
+
+para que no nos tire este warning:
+
+> (6:61388) from "autoprefixer" plugin: Replace color-adjust to print-color-adjust. The color-adjust shorthand is currently deprecated.
+
 ## Font Awesome
 
 Agregamos la biblioteca de íconos [Font Awesome](https://fontawesome.com/get-started) para mostrar la lupa que simboliza la búsqueda en la pantalla. En el archivo _index.html_ agregamos el css (podríamos haberlo hecho también en el archivo _angular.json_ como contamos recién):
 
 ```html
-<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.13/css/all.css" integrity="sha384-DNOHZ68U8hZfKXOrtjWvjxusGo9WQnrNx2sqG0tfsghAvtVlRW3tvkXWZh58N9jp" crossorigin="anonymous">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 ```
 
 # Arquitectura general de la aplicación
