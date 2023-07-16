@@ -12,9 +12,6 @@
     "build:prod": "ng build --prod",
     "test:prod": "ng test --browsers=ChromeHeadless --watch=false --code-coverage"
   },
-  "overrides": {
-    "autoprefixer": "10.4.5"
-  },
   "private": true,
   "dependencies": {
     "@angular/animations": "^16.1.0",
