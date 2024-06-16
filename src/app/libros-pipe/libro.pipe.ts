@@ -1,8 +1,11 @@
 import { Pipe, PipeTransform } from '@angular/core'
+import { Libro } from 'domain/libro'
 
-import { Libro } from './domain/libro'
-
-@Pipe({ name: 'libroFilter' })
+@Pipe({
+  name: 'libroFilter',
+  standalone: true,
+  pure: true, // por defecto lo son
+})
 export class LibroFilter implements PipeTransform {
 
   transform(libros: Libro[], libroABuscar: string): Libro[] {
