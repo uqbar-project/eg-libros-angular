@@ -3,7 +3,7 @@
 </div>
 <div class="card card-body formulario">
   <div class="md-form">
-    <input type="text" [(ngModel)]="libroEdicion.titulo" class="form-control form-icon-trailing" placeholder="Título">
+    <input type="text" data-testid="titulo" [(ngModel)]="libroEdicion.titulo" class="form-control form-icon-trailing" placeholder="Título">
   </div>
 
   <div class="md-form">
@@ -19,7 +19,7 @@
   </div>
 
   <div class="md-form">
-    <button class="btn btn-primary" (click)="aceptar()">Aceptar</button>
-    <button class="btn btn-secondary" (click)="cancelar()">Cancelar</button>
+    <button class="btn btn-primary" data-testid="aceptar" (click)="aceptar()">Aceptar</button>
+    <button class="btn btn-secondary" data-testid="cancelar" (click)="cancelar()">Cancelar</button>
   </div>
 </div>

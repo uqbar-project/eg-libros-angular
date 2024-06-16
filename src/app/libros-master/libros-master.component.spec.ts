@@ -1,7 +1,10 @@
-import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing'
+import { ComponentFixture, TestBed, fakeAsync } from '@angular/core/testing'
 
 import { LibrosMasterComponent } from './libros-master.component'
 import { getAllByTestId } from 'utils/test-utils'
+import { RouterModule } from '@angular/router'
+import { LibroService } from 'app/libro.service'
+import StubLibroService from 'app/stub.libro.service'
 
 describe('LibrosMasterComponent', () => {
   let component: LibrosMasterComponent
@@ -9,7 +12,10 @@ describe('LibrosMasterComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [LibrosMasterComponent]
+      imports: [LibrosMasterComponent, RouterModule.forRoot([])],
+      providers: [
+        { provide: LibroService, useClass: StubLibroService }
+      ]
     }).compileComponents()
 
     fixture = TestBed.createComponent(LibrosMasterComponent)
@@ -17,20 +23,20 @@ describe('LibrosMasterComponent', () => {
     fixture.detectChanges()
   })
 
-  it('should create the component', waitForAsync(() => {
+  it('should create the component', fakeAsync(() => {
     expect(component).toBeTruthy()
   }))
-  it('should return ok all books', waitForAsync(() => {
+  it('should return ok all books', fakeAsync(() => {
     const filasLibros = getAllByTestId(fixture, 'titulo')
     expect(filasLibros.length).toBe(2)
     expect(filasLibros[0].textContent.trim()).toBe('Rayuela')
   }))
-  it('should filter ok books by title', waitForAsync(() => {
+  it('should filter ok books by title', fakeAsync(() => {
     component.libroABuscar = 'Fic'
     fixture.detectChanges()
     soloHayUnLibro(fixture, 'Ficciones')
   }))
-  it('should filter ok books by author', waitForAsync(() => {
+  it('should filter ok books by author', fakeAsync(() => {
     component.libroABuscar = 'bor'
     fixture.detectChanges()
     soloHayUnLibro(fixture, 'Ficciones')

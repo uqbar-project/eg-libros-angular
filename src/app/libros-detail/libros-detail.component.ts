@@ -29,6 +29,8 @@ export class LibrosDetailComponent {
     this.route.params.subscribe((editarLibroParameters) => {
       const libro = this.libroService.getLibro(+(editarLibroParameters['id']))
       if (!libro) {
+        this.libro = new Libro('', '', '', 0)
+        this.libroEdicion = this.libro.generarCopia()
         this.navegarAHome()
       } else {
         this.libro = libro

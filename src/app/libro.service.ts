@@ -10,7 +10,7 @@ export class LibroService {
   constructor() {
     this.libros = [
       new Libro('The design of everyday things', 'Don Norman', 'Editto', 368),
-      new Libro('El nombre del viento', 'Patrik Rufus', 'DAW Books', 613),
+      new Libro('El nombre del viento', 'Patrick Rothfuss', 'DAW Books', 613),
       new Libro('Canción de Hielo y Fuego', 'George R.R. Martin', 'Penguin Random House', 800),
       new Libro('Las venas abiertas de América Latina', 'Eduardo Galeano', 'Siglo XXI', 379),
       new Libro('A sangre fría', 'Truman Capote', 'Anagrama', 440),
