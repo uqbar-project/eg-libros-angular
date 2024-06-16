@@ -1,4 +1,4 @@
-import { ComponentFixture, TestBed, fakeAsync } from '@angular/core/testing'
+import { ComponentFixture, TestBed } from '@angular/core/testing'
 
 import { LibrosMasterComponent } from './libros-master.component'
 import { getAllByTestId } from 'utils/test-utils'
@@ -23,20 +23,20 @@ describe('LibrosMasterComponent', () => {
     fixture.detectChanges()
   })
 
-  it('should create the component', fakeAsync(() => {
+  it('should create the component', (() => {
     expect(component).toBeTruthy()
   }))
-  it('should return ok all books', fakeAsync(() => {
+  it('should return ok all books', (() => {
     const filasLibros = getAllByTestId(fixture, 'titulo')
     expect(filasLibros.length).toBe(2)
     expect(filasLibros[0].textContent.trim()).toBe('Rayuela')
   }))
-  it('should filter ok books by title', fakeAsync(() => {
+  it('should filter ok books by title', (() => {
     component.libroABuscar = 'Fic'
     fixture.detectChanges()
     soloHayUnLibro(fixture, 'Ficciones')
   }))
-  it('should filter ok books by author', fakeAsync(() => {
+  it('should filter ok books by author', (() => {
     component.libroABuscar = 'bor'
     fixture.detectChanges()
     soloHayUnLibro(fixture, 'Ficciones')
