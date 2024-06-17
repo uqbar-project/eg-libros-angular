@@ -1,6 +1,6 @@
 # Búsqueda de libros básica
 
-[![Build](https://github.com/uqbar-project/eg-libros-angular/actions/workflows/build.yml/badge.svg)](https://github.com/uqbar-project/eg-libros-angular/actions/workflows/build.yml) ![Coverage](./badges/eg-libros-angular/coverage.svg)
+[![Build](https://github.com/uqbar-project/eg-libros-angular/actions/workflows/build.yml/badge.svg)](https://github.com/uqbar-project/eg-libros-angular/actions/workflows/build.yml) [![codecov](https://codecov.io/gh/uqbar-project/eg-libros-angular/graph/badge.svg?token=EPcIxs9n1N)](https://codecov.io/gh/uqbar-project/eg-libros-angular)
 
 ![demo](./images/demo.gif)
 
