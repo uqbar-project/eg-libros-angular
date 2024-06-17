@@ -1,7 +1,7 @@
 import { inject, TestBed } from '@angular/core/testing'
 
-import { Libro } from './domain/libro'
 import { LibroService } from './libro.service'
+import { Libro } from 'domain/libro'
 
 describe('LibroService', () => {
   beforeEach(() => {

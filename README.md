@@ -1,18 +1,12 @@
 # Búsqueda de libros básica
 
-[![Build](https://github.com/uqbar-project/eg-libros-angular/actions/workflows/build.yml/badge.svg)](https://github.com/uqbar-project/eg-libros-angular/actions/workflows/build.yml) ![Coverage](./badges/eg-libros-angular/coverage.svg)
+[![Build](https://github.com/uqbar-project/eg-libros-angular/actions/workflows/build.yml/badge.svg)](https://github.com/uqbar-project/eg-libros-angular/actions/workflows/build.yml) [![codecov](https://codecov.io/gh/uqbar-project/eg-libros-angular/graph/badge.svg?token=EPcIxs9n1N)](https://codecov.io/gh/uqbar-project/eg-libros-angular)
 
-# Creación del proyecto
-
-Lo creamos mediante Angular CLI,
-
-```bash
-ng new eg-libros-angular
-```
+![demo](./images/demo.gif)
 
 ## Material Design for Bootstrap
 
-Luego necesitamos las dependencias de Material Design for Bootstrap
+Necesitamos las dependencias de Material Design for Bootstrap
 
 ```bash
 npm install mdbootstrap
@@ -64,38 +58,29 @@ Agregamos la biblioteca de íconos [Font Awesome](https://fontawesome.com/get-st
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 ```
 
-# Arquitectura general de la aplicación
+## Arquitectura general de la aplicación
 
 ![images](images/Arquitectura.png)
 
-Además del esquema MVC que propone Angular (una vista principal app.component.html y su correspondiente controller app.component.ts), vamos a incorporar:
+### Master: búsqueda de libros
+
+Además del esquema MVC que propone Angular, vamos a incorporar:
 
 - nuestro clásico objeto de dominio, un Libro
 - un objeto encargado de proveer la lista de libros, que es parte de la arquitectura de Angular: un LibroService
 - y un objeto que será encargado de hacer el filtro cuando el usuario escriba un valor a buscar, LibroFilter que forma parte de la arquitectura de Angular llamada _pipe_ (hemos visto un _pipe_ predeterminado que es el que transforma un valor decimal según el formato de una configuración regional para que por ejemplo considere la coma decimal en lugar del punto)
 
-# Service
+## Service
 
 Para crear el service utilizamos un comando propio de Angular CLI:
 
 ```bash
-ng generate service libro
+ng generate service libro  # o ng g s libro
 ```
 
 Esto genera el archivo libro.service.ts y su correspondiente test libro.service.spec.ts
 
-La implementación es simplemente una lista _hardcoded_ de valores, aunque más adelante veremos que el origen de datos puede ser un servidor externo:
-
-```typescript
-export class LibroService {
-  libros: Libro[]
-
-  constructor() {
-      this.libros = [
-          new Libro('The design of every day things', 'Don Norman'),
-          new Libro('El nombre del viento', 'Patrik Rufus'),
-          ...
-```
+La implementación es simplemente una lista _hardcoded_ de valores, aunque más adelante veremos que el origen de datos puede ser un servidor externo.
 
 ## Testeo unitario sobre el service
 
@@ -121,65 +106,17 @@ Luego, en cada test recibimos la referencia al servicio mockeado para poder util
 
 En este caso no es demasiado interesante lo que ocurre, el servicio mockeado coincide con el servicio original. Pero cuando tenemos que acceder a servicios remotos (y presumiblemente costosos), podemos reemplazar el comportamiento del service por otro más controlado para facilitar las pruebas unitarias. Y a su vez también podemos hacer esto para testear nuestros componentes de Angular. En ejemplos posteriores veremos más en profundidad este tema.
 
-La implementación del servicio se haría sobre dos clases de equivalencia:
+Testearemos dos clases de equivalencia sobre el servicio:
 
 - la primera, el caso exitoso: el servicio nos devuelve un libro que existe
 - la segunda, un caso no exitoso: el servicio no encuentra un libro
 
-### Primer test
-
-Escribimos el primer test:
-
-```ts
-  it('should find a known book', inject([LibroService], (service: LibroService) => {
-    const existeLibro = libros.some((libro: Libro) => libro.titulo.startsWith('Kryptonita'))
-    expect(existeLibro).toBeTruthy()
-  }))
-```
-
-Como siempre, el uso del método `some` (similar al `any` de Wollok, o `exists` de Xtend) es preferible a:
-
-- hacer un filter y preguntar si el size de la colección resultante es > 0
-- hacer un filter y preguntar si la colección resultante no es empty
-- preguntar si find !== null
-
-porque estamos expresando lo mismo más explícitamente, queremos saber si **hay algún libro**.
-
-### Refactor del test
-
-Pero al empezar a codificar el segundo test nos damos cuenta que en ambos casos tenemos un mismo patrón de comportamiento: le pedimos los libros al servicio y queremos saber si alguno de los libros cumple que el título tenga una condición. Por eso vamos a crear una función:
-
-```ts
-function buscarLibros(libros: Libro[], tituloStartsWith: string) {
-  return libros.some((libro: Libro) => libro.titulo.startsWith(tituloStartsWith))
-}
-```
-
-o bien podemos armarla con la sintaxis de _lambdas_:
-
-```ts
-const buscarLibros = (libros: Libro[], tituloStartsWith: string) => {
-  return libros.some((libro: Libro) => libro.titulo.startsWith(tituloStartsWith))
-}
-```
-
-Después, en cada test, vamos a pedir que se cumpla y que no se cumpla respectivamente:
-
-```ts
-  it('should find a known book', inject([LibroService], (service: LibroService) => {
-    expect(buscarLibros(service.libros, 'Kryptonita')).toBeTruthy()
-  }))
-  it('should not find a not existing book', inject([LibroService], (service: LibroService) => {
-    expect(buscarLibros(service.libros, 'Zarakatunga')).toBeFalsy()
-  }))
-```
-
-# Pipe
+## Pipe
 
 También creamos un pipe mediante un comando Angular CLI:
 
 ```bash
-ng generate pipe libro
+ng generate pipe libro   # o ng g p libro
 ```
 
 Esto genera el archivo libro.pipe.ts y su correspondiente test `libro.pipe.spec.ts`.
@@ -211,7 +148,7 @@ Además se incorpora la annotation @Pipe a nuestra clase LibroFilter.
 Para probar el pipe vamos a crear una lista de libros propia dentro de nuestro test (archivo _libro.pipe.spec.ts_):
 
 ```typescript
-const libros = [new Libro('Rayuela', 'Cortazar'), new Libro('Ficciones', 'Borges') ]
+const libros = [new Libro('Rayuela', 'Cortazar', 'Alfaguara', 220), new Libro('Ficciones', 'Borges', 'Planeta', 310)]
 ```
 
 Luego del típico test de creación del filtro exitosa, vamos a realizar estas pruebas:
@@ -220,14 +157,11 @@ Luego del típico test de creación del filtro exitosa, vamos a realizar estas p
 - al ingresar un valor, funciona la búsqueda por título sin tomar en cuenta mayúsculas / minúsculas. En nuestro ejemplo ingresamos "rayu" lo que debe traer el libro "Rayuela" de Cortázar.
 - y al ingresar un valor, funciona la búsqueda por autor sin tomar en cuenta mayúsculas / minúsculas. En nuestro ejemplo ingresamos "bor" lo que debe traer el libro "Ficciones" de Borges.
 
+Dejamos uno de los tests de ejemplo y el lector puede investigar la implementación donde hicimos un pequeño refactor para no repetir la misma pregunta en ambos tests:
+
 ```typescript
 describe('LibroPipe', () => {
   ...
-  it('returns same collection of books when no filter is applied', () => {
-    const pipe = new LibroFilter()
-    const librosFiltrados = pipe.transform(libros, '')
-    expect(librosFiltrados.length).toBe(2)
-  })
   it('filters by title (case insensitive)', () => {
     const pipe = new LibroFilter()
     const librosFiltrados : Libro[] = pipe.transform(libros, 'rayu')
@@ -235,41 +169,12 @@ describe('LibroPipe', () => {
     const rayuela = librosFiltrados.pop()
     expect(rayuela.titulo).toBe('Rayuela')
   })
-  it('filters by author (case insensitive)', () => {
-    const pipe = new LibroFilter()
-    const librosFiltrados : Libro[] = pipe.transform(libros, 'bor')
-    expect(librosFiltrados.length).toBe(1)
-    const ficciones = librosFiltrados.pop()
-    expect(ficciones.titulo).toBe('Ficciones')
-  })
 })
 ```
 
-Mmm... hay algo de código repetido, hagamos un pequeño refactor:
+## La aplicación MVC
 
-```typescript
-  it('filters by title (case insensitive)', () => {
-    encontrar('rayu', 'Rayuela')
-  })
-  it('filters by author (case insensitive)', () => {
-    encontrar('bor', 'Ficciones')
-  })
-})
-
-const encontrar = (criterioBusqueda: string, titulo: string) => {
-  const pipe = new LibroFilter()
-  const librosFiltrados: Libro[] = pipe.transform(libros, criterioBusqueda)
-  expect(librosFiltrados.length).toBe(1)
-  const lastBook = librosFiltrados.pop()
-  expect(lastBook.titulo).toBe(titulo)
-}
-```
-
-Mucho mejor, extraemos una función propia del test que haga las validaciones comunes.
-
-# La aplicación MVC
-
-En sí la aplicación tiene una vista _app.component.html_ con componentes propios de [Material Design for Bootstrap](https://mdbootstrap.com/), específicamente con dos tipos de binding:
+En sí la aplicación tiene una vista _libro-master.component.html_ con componentes propios de [Material Design for Bootstrap](https://mdbootstrap.com/), específicamente con dos tipos de binding:
 
 - el input con binding bidireccional contra la propiedad libroABuscar del componente
 
@@ -283,71 +188,38 @@ En sí la aplicación tiene una vista _app.component.html_ con componentes propi
 - y la tabla de libros contra la propiedad libros del mismo componente principal
 
 ```html
-<table class="table table-striped table-bordered table-hover">
-  <tr class="cyan lighten-4">
-    <th>Titulo</th>
-    <th>Autor</th>
-  </tr>
-  <tr *ngFor="let libro of libros | libroFilter: libroABuscar">
-    <td data-testid="titulo">{{libro.titulo}}</td>
-    <td data-testid="autor">{{libro.autor}}</td>
-  </tr>
-</table>
-```
-
-El pipe libroFilter se aplica como filtro de los libros asociados.
-
-El controller (_app.component.ts_) delega la búsqueda de los libros al service y sirve como contenedor del estado de la vista:
-
-```typescript
-export class AppComponent implements OnInit {
-  title = 'app'
-  libroABuscar = ''
-  libros: Libro[] = []
-  
-  constructor(public librosService: LibroService) { }
-  
-  ngOnInit(): void {
-    this.libros = this.librosService.libros
+<!-- dentro de la tabla -->
+  @for (libro of libros | libroFilter: libroABuscar ; track libro) {
+    <tr [routerLink]="['/detail', libro.id]">
+      <td data-testid="titulo">{{libro.titulo}}</td>
+      <td data-testid="autor">{{libro.autor}}</td>
+    </tr>
   }
-}
 ```
 
-El libro no tiene comportamiento, representa por el momento un objeto de dominio con los atributos título y autor.
+El pipe libroFilter se aplica como filtro de los libros asociados, para lo cual debemos importar el _pipe_ en el componente:
 
-# Testing del componente principal
-
-En lugar de trabajar con el servicio que definimos, vamos a construir un stub de testing (_stub.libro.service.ts_):
-
-```typescript
-export default class StubLibroService {
-  libros = [new Libro('Rayuela', 'Cortazar'), new Libro('Ficciones', 'Borges') ]
-}
+```ts
+@Component({
+  selector: 'app-libros-master',
+  standalone: true,
+  imports: [..., LibroFilter, ...],
 ```
 
-Ese stub lo vamos a inyectar dentro del componente principal AppComponent en la inicialización de nuestro fixture:
+El controller (_libro-master.component.ts_) delega la búsqueda de los libros al service y sirve como contenedor del estado de la vista. El libro representa un objeto de dominio con atributos y algunos métodos que veremos a continuación.
+
+## Testing del componente principal
+
+En lugar de trabajar con el servicio que definimos, vamos a construir un stub de testing (_stub.libro.service.ts_), que define dos libros: Rayuela y Cortázar. Ese stub lo vamos a inyectar dentro del componente principal AppComponent en la inicialización de nuestro fixture:
 
 ```typescript
-describe('AppComponent', () => {
-  beforeEach(async(() => {
-    TestBed.configureTestingModule({
-      declarations: [
-        AppComponent,
-        LibroFilter
-      ],
-      imports: [
-        FormsModule
-      ],
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
+      imports: [LibrosMasterComponent, RouterModule.forRoot([])],
       providers: [
-        StubLibroService
+        { provide: LibroService, useClass: StubLibroService }
       ]
     }).compileComponents()
-    libroService = TestBed.get(StubLibroService)
-    fixture = TestBed.createComponent(AppComponent)
-    app = fixture.componentInstance
-    app.librosService = libroService
-    fixture.detectChanges()
-  }))
 ```
 
 Mediante la configuración _providers_ agregamos el stub que luego se pasa a la referencia app que decora nuestra aplicación Angular. A partir de aquí podemos probar:
@@ -402,3 +274,116 @@ const soloHayUnLibro = (fixture: any, titulo: string) => {
 ```
 
 - podemos además validar la cantidad de libros que recibimos tras aplicar la búsqueda: de esa manera tenemos tests unitarios (el pipe, el service) y de integración (el componente que llama al pipe, el service no participa de esta integración ya que lo estamos mockeando, [Martin Fowler](https://martinfowler.com/bliki/UnitTest.html) diría que es un test social en cuanto al pipe pero solitario en cuanto al service)
+
+## Navegación master a detail
+
+En la página principal (master) utilizamos un css específico para mostrar el libro sobre el cual nos paramos (_hover_) con un color especial y el cursor con una manito:
+
+```css
+tr:hover {
+  background-color: beige;
+  cursor: pointer;
+}
+```
+
+Para navegar cada row tiene un routerLink que nos lleva a `/detail/:id`. Por ejemplo, para el libro con identificador 2, se genera la ruta `/detail/2`:
+
+```html
+<tr [routerLink]="['/detail', libro.id]">
+```
+
+Para poder utilizar el routerLink tenemos que importar el módulo de routing en el componente:
+
+```ts
+@Component({
+  selector: 'app-libros-master',
+  standalone: true,
+  imports: [..., RouterModule],
+```
+
+## Recuperación del libro en el componente detail
+
+La comunicación entre master/detail se da por el identificador del libro, entonces lo que vamos a hacer es
+
+- recibir el identificador en base a la ruta: `/detail/2` => obtenemos el id 2
+- y recuperaremos el libro a partir de pedírselo al service (un detalle de implementación es que el número al participar de la URL viene como string y hay que convertirlo a number)
+
+Necesitamos para eso inyectar el objeto `ActivatedRoute`:
+
+```ts
+  constructor(
+    ...
+    private route: ActivatedRoute
+  ) {}
+
+  ngOnInit() {
+    this.route.params.subscribe((editarLibroParameters) => {
+      const libro = this.libroService.getLibro(+(editarLibroParameters['id']))
+```
+
+El componente guarda en un estado intermedio el libro y también tiene dos métodos aceptar() y cancelar() que terminan navegando a la pantalla inicial. Esto lo hacemos en forma programática, inyectando el `router`:
+
+```ts
+navegarAHome() {
+  this.router.navigate(['/master']) // router se inyecta en el constructor
+}
+
+aceptar() {
+  this.libroService.actualizar(this.libroEdicion)
+  this.navegarAHome()
+}
+
+cancelar() {
+  this.navegarAHome()
+}
+```
+
+## Libro intermedio vs. el libro
+
+En una app donde tengamos una base de datos, podemos tener una sola referencia al libro, 
+
+- si el usuario presiona Cancelar, podemos ir al origen de datos y volver a pedir la información original descartando los valores intermedios
+- si el usuario presiona Aceptar, debemos informar al origen de datos cuáles son los nuevos datos del libro y luego sí podemos volver a la pantalla inicial donde tendremos la nueva información del libro dentro de la lista que recibimos del origen de datos
+
+Como nosotros tenemos un service **singleton** que trabaja con una colección en memoria, si nosotros hacemos cambios en el libro y luego presionamos Cancelar, el service y la vista comparten **el mismo objeto**, con lo cual perderemos la información que teníamos antes. Entonces la estrategia requiere hacer una copia del objeto Libro y o bien 1. la edición se hace sobre el libro intermedio y luego al Aceptar pisamos los valores del objeto Libro original, o 2. la edición se hace sobre el libro original y al cancelar se pisa el libro original con la copia antes de comenzar el caso de uso de edición. Nosotros fuimos por la variante 1:
+
+```ts
+ngOnInit() {
+  // en la inicialización hacemos una copia del libro que recibimos
+  ...
+  const libro = this.libroService.getLibro(+(editarLibroParameters['id']))
+  this.libro = libro
+
+  // éste es el libro que editamos en la vista
+  this.libroEdicion = libro.generarCopia()
+}
+```
+
+Veamos cómo la vista hace el binding de un control:
+
+```html
+<div class="md-form">
+  <input type="number" [(ngModel)]="libroEdicion.paginas" ...
+```
+
+Y finalmente al presionar el botón Aceptar le pasamos al service el objeto Libro editado:
+
+```ts
+aceptar() {
+  this.libroService.actualizar(this.libroEdicion)
+  ...
+}
+```
+
+El service pisa entonces los datos a partir de otro método que tiene el objeto de dominio:
+
+```ts
+actualizar(libroActualizado: Libro) {
+  const libro = this.getLibro(libroActualizado.id)
+  ...
+  libro.actualizarDesde(libroActualizado)
+}
+```
+
+## Testing
+

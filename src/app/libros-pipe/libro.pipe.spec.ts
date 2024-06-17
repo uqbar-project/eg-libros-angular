@@ -1,7 +1,7 @@
-import { Libro } from './domain/libro'
+import { Libro } from 'domain/libro'
 import { LibroFilter } from './libro.pipe'
 
-const libros = [new Libro('Rayuela', 'Cortazar'), new Libro('Ficciones', 'Borges')]
+const libros = [new Libro('Rayuela', 'Cortazar', 'Alfaguara', 220), new Libro('Ficciones', 'Borges', 'Planeta', 310)]
 
 describe('LibroPipe', () => {
   it('creates an instance', () => {
