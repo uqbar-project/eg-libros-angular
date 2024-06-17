@@ -1,4 +1,4 @@
-# Búsqueda de libros básica
+# Búsqueda y edición de libros
 
 [![Build](https://github.com/uqbar-project/eg-libros-angular/actions/workflows/build.yml/badge.svg)](https://github.com/uqbar-project/eg-libros-angular/actions/workflows/build.yml) [![codecov](https://codecov.io/gh/uqbar-project/eg-libros-angular/graph/badge.svg?token=EPcIxs9n1N)](https://codecov.io/gh/uqbar-project/eg-libros-angular)
 
@@ -386,4 +386,88 @@ actualizar(libroActualizado: Libro) {
 ```
 
 ## Testing
+
+Queremos contar el testeo de front que hacemos sobre el componente detail:
+
+```ts
+    await TestBed.configureTestingModule({
+      imports: [LibrosDetailComponent],
+      providers: [
+        { provide: Router, useValue: routerSpy },
+        { provide: ActivatedRoute, useValue: { params: { subscribe: subscribeValido } }},
+        { provide: LibroService, useValue: libroService },
+      ],
+    }).compileComponents()
+```
+
+- inyectamos un espía del router,
+- un service y
+- un ActivateRoute que es el que vamos a necesitar mockear para simular que el usuario seleccionó un libro previamente
+
+Recordemos que en el evento que inicializa el componente Detail se obtiene el id del libro:
+
+```ts
+ngOnInit() {
+  this.route.params.subscribe((editarLibroParameters) => {
+    const libro = this.libroService.getLibro(+(editarLibroParameters['id']))
+    if (!libro) {
+      ...
+    } else {
+      ...
+    }
+  })
+}
+```
+
+`route` es un ActivatedRoute, al que le podemos sus params, donde el método subscribe nos permite pasarle una función
+
+- que recibe un objeto
+- y que no devuelve nada, porque produce un efecto (en nuestro caso obtiene el libro para inicializar el componente correctamente)
+
+¿Qué es lo que necesitamos nosotros para testear?
+
+La función tiene que recibir como parámetro un objeto que tenga un atributo `id`. La construimos en el test y se llama `subscribeValido`:
+
+```ts
+const subscribeValido = (fn: (value: Data) => void) => {
+  fn({ id: existingBookId })
+}
+```
+
+Fíjense que lo que estamos haciendo es invocar a la lambda que definimos en el DetailComponent pero hardcodeando el `id` a `existingBookId`. De esa manera siempre vamos a obtener el segundo libro que nos da el stub service.
+
+Una vez resuelta la parte de la navegación el test que prueba la edición es bastante similar a lo que venimos haciendo. Le dejamos al lector que investigue la resolución.
+
+## Testeo de router con espías
+
+Algo interesante es que podemos testear la navegación posterior de nuestro componente, por ejemplo si el usuario presiona el botón Aceptar debería navegar hacia la ruta `/master`. Entonces definimos un **spy** para el router que está escuchando el evento `navigate` para poder saber si la app cambió la ruta a la que estamos esperando:
+
+```ts
+describe('LibrosDetailComponent for a valid book', () => {
+  let routerSpy: jasmine.SpyObj<Router>
+  ...
+  
+  beforeEach(async () => {
+    routerSpy = jasmine.createSpyObj('Router', ['navigate'])
+    ...
+  }
+
+  it('should navigate back to home when submitted', (() => {
+    clickOn('aceptar')
+    shouldNavigateTo('/master')
+  }))
+
+  function clickOn(buttonDataTestId: string) {
+    const compiled = fixture.debugElement.nativeElement
+    compiled.querySelector(`[data-testid='${buttonDataTestId}']`).click()
+    fixture.detectChanges()
+  }
+
+  function shouldNavigateTo(url: string) {
+    const [route] = routerSpy.navigate.calls.first().args[0]
+    expect(route).toBe(url)
+  }
+```
+
+
 

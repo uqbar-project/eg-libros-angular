@@ -53,8 +53,10 @@ describe('LibrosDetailComponent for a valid book', () => {
   it('should take effect when form submitted', (() => {
     const newValue = 'valorNuevo'
     const compiled = fixture.debugElement.nativeElement
-    component.libroEdicion.titulo = newValue
-    compiled.querySelector('[data-testid="aceptar"]').click()
+    const tituloInput = compiled.querySelector('[data-testid="titulo"]')
+    tituloInput.value = newValue
+    tituloInput.dispatchEvent(new Event('input'))
+    clickOn('aceptar')
     expect(libroService.getLibro(existingBookId)?.titulo).toBe(newValue)
   }))
 
